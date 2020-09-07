@@ -11,9 +11,6 @@
 // Initialise all IO ports
 void ioInit();
 
-// Read the rotary switch
-void ioReadRotary( bool *pbA, bool *pbB, bool *pbSw );
-
 void toggleLED();
 bool readSW();
 

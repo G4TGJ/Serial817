@@ -14,6 +14,7 @@
 #include "serial.h"
 #include "display.h"
 #include "nvram.h"
+#include "pushbutton.h"
 
 #define NUM_BAUD_RATES 8
 static const uint32_t baudRate[NUM_BAUD_RATES] =
@@ -45,7 +46,12 @@ void displayBaudRate()
 
 int main(void)
 {
+    // Keep track of pushbutton debounce
+    static struct sDebounceState debounceState;
+
     uint32_t previousMillis = 0;
+
+    bool shortPress, longPress;
 
     // Receive string for the char plus null
     char s[2];
@@ -101,30 +107,39 @@ int main(void)
             }
         }
 
+        // Read and debounce the pushbutton
+        debouncePushbutton( readSW(), &shortPress, &longPress, 200, 1000, &debounceState);
+
+        // If a long press off the button then display a message
+        if( longPress )
+        {
+            displayText(0, "Long press", true);
+        }
+
+        // If the button is pressed then change the baud rate
+        if( shortPress )
+        {
+            baudIndex = (baudIndex+1) % NUM_BAUD_RATES;
+
+            // Display the baud rate before it changes
+            displayBaudRate();
+
+            // Wait for the new baud rate to be transmitted over
+            // the serial before changing the rate.
+            delay(200);
+
+            // Set the new baud rate
+            serialInit( baudRate[baudIndex] );
+
+            // Store the new baud rate
+            nvramWriteBaudIndex(baudIndex);
+        }
+
         // Toggle LED state every second
         if( (currentMillis - previousMillis) > 1000 )
         {
             toggleLED();
             previousMillis = currentMillis;
-
-            // If the button is pressed then change the baud rate
-            if( readSW() )
-            {
-                baudIndex = (baudIndex+1) % NUM_BAUD_RATES;
-
-                // Display the baud rate before it changes
-                displayBaudRate();
-
-                // Wait for the new baud rate to be transmitted over
-                // the serial before changing the rate.
-                delay(200);
-
-                // Set the new baud rate
-                serialInit( baudRate[baudIndex] );
-
-                // Store the new baud rate
-                nvramWriteBaudIndex(baudIndex);
-            }
         }
     }
 }

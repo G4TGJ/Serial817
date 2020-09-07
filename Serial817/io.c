@@ -52,15 +52,6 @@ void ioInit()
     SW_DIR_REG &= ~(1 << SW_PIN);
     SW_PIN_CTRL &= ~(1 << PORT_PULLUPEN_bp);
 
-    // Set the rotary pins to inputs with pull ups
-    ROTARY_ENCODER_SW_DIR_REG &= ~(1 << ROTARY_ENCODER_SW_PIN);
-    ROTARY_ENCODER_SW_PIN_CTRL |= (1 << PORT_PULLUPEN_bp);
-    ROTARY_ENCODER_A_DIR_REG &= ~(1 << ROTARY_ENCODER_A_PIN);
-    ROTARY_ENCODER_A_PIN_CTRL |= (1 << PORT_PULLUPEN_bp);
-    ROTARY_ENCODER_B_DIR_REG &= ~(1 << ROTARY_ENCODER_B_PIN);
-    ROTARY_ENCODER_B_PIN_CTRL |= (1 << PORT_PULLUPEN_bp);
-
-
     /* Insert nop for synchronization*/
     _NOP();
 }
@@ -75,32 +66,13 @@ bool readSW()
     return !(SW_IN_REG & (1 << SW_PIN));
 }
 
-
-void ioReadRotary( bool *pbA, bool *pbB, bool *pbSw )
-{
-    *pbA  = !(ROTARY_ENCODER_A_IN_REG & (1 << ROTARY_ENCODER_A_PIN));
-    *pbB  = !(ROTARY_ENCODER_B_IN_REG & (1 << ROTARY_ENCODER_B_PIN));
-    *pbSw = !(ROTARY_ENCODER_SW_IN_REG & (1 << ROTARY_ENCODER_SW_PIN));
-}
-
 #else
 
 // ATtiny85
 
-void ioReadRotary( bool *pbA, bool *pbB, bool *pbSw )
-{
-    *pbA =  !(ROTARY_ENCODER_A_PIN_REG & (1<<ROTARY_ENCODER_A_PIN));
-    *pbB = !(ROTARY_ENCODER_B_PIN_REG & (1<<ROTARY_ENCODER_B_PIN));
-    *pbSw = !(ROTARY_ENCODER_SW_PIN_REG & (1<<ROTARY_ENCODER_SW_PIN));
-}
-
 // Configure all the I/O we need
 void ioInit()
 {
-    ROTARY_ENCODER_A_PORT_REG |= (1<<ROTARY_ENCODER_A_PIN);
-    ROTARY_ENCODER_B_PORT_REG |= (1<<ROTARY_ENCODER_B_PIN);
-    ROTARY_ENCODER_SW_PORT_REG |= (1<<ROTARY_ENCODER_SW_PIN);
-
     /* Insert nop for synchronization*/
     _NOP();
 }
