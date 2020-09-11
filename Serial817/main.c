@@ -16,6 +16,14 @@
 #include "nvram.h"
 #include "pushbutton.h"
 
+#if defined __AVR_ATtiny3216__
+#define DISPLAY_TEXT "ATtiny3216"
+#elif defined __AVR_ATtiny817__
+#define DISPLAY_TEXT "ATtiny3216"
+#else
+#define DISPLAY_TEXT "AVR"
+#endif
+
 #define NUM_BAUD_RATES 8
 static const uint32_t baudRate[NUM_BAUD_RATES] =
 {
@@ -68,11 +76,11 @@ int main(void)
 
     // Set up the serial with a message
     serialInit(baudRate[baudIndex]);
-    serialTXString("Welcome to the ATtiny817\n\r");
+    serialTXString("Welcome to the " DISPLAY_TEXT "\n\r");
 
     // Set up the display with a brief welcome message
     displayInit();
-    displayText( 0, "ATtiny817", true );
+    displayText( 0, DISPLAY_TEXT, true );
     delay(1000);
 
     displayBaudRate();
@@ -108,7 +116,7 @@ int main(void)
         }
 
         // Read and debounce the pushbutton
-        debouncePushbutton( readSW(), &shortPress, &longPress, 200, 1000, &debounceState);
+        debouncePushbutton( readSW(), &shortPress, &longPress, 100, 500, &debounceState);
 
         // If a long press off the button then display a message
         if( longPress )

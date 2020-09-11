@@ -37,7 +37,11 @@ typedef uint8_t bool;
 
 #define SW_DIR_REG      VPORTC.DIR
 #define SW_IN_REG       VPORTC.IN
-#define SW_PIN          5
+#ifdef __AVR_ATtiny3216__ 
+#define SW_PIN          1
+#else
+#define SW_PIN          3
+#endif
 #define SW_PIN_CTRL     PORTC.PIN5CTRL
 
 // Serial port definitions
