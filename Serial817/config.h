@@ -28,6 +28,8 @@ typedef uint8_t bool;
 // CPU clock speed
 #define F_CPU 3333333UL
 
+#define CLOCK_DIV 1
+
 // I/O definitions
 
 #define LED_DIR_REG     VPORTC.DIR
